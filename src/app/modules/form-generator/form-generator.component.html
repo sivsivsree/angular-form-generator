@@ -1,343 +1,364 @@
 <div *ngIf="structure" class="structure">
 
-  <div *ngIf="saveInfo.show" class=""> {{showInfo.msg}}</div>
-  <form novalidate (keydown.enter)="$event.preventDefault()" name="customForm" #customForm="ngForm"
-        (ngSubmit)="submitTheForm()">
-    <div *ngIf="structure && !loading" class="fp-m3">
-      <section *ngFor="let section of structure.sections; let i = index;" class="card  fp-p2">
+    <div *ngIf="saveInfo.show" class=""> {{showInfo.msg}}</div>
+    <form novalidate (keydown.enter)="$event.preventDefault()" name="customForm" #customForm="ngForm"
+          (ngSubmit)="submitTheForm()">
+        <div *ngIf="structure && !loading" class="fp-m3">
 
-        <header>
-          <h4 class="app-screen-header pb1 w96">
-            <div *ngIf="screenName.invalid"> Enter the screen name</div>
-            <input required type="text" style="width: 50%;"
-                   [value]="section.screenName"
-                   [name]="section.sectionName + '_section'"
-                   id="{{section.sectionName + '_section'}}"
-                   [(ngModel)]="structure.sections[i].screenName" #screenName="ngModel">
+            <section *ngFor="let section of structure.sections; let i = index;" class="card  fp-p2">
 
-
-            <button type="button" class="close-fix ripple"
-                    (click)="(display[i]['_display'] == null || display[i]['_display']==false )? display[i]['_display']=true: display[i]['_display']=false">
-              <span *ngIf="!display[i]['_display']">+</span>
-              <span *ngIf="display[i]['_display']">x</span>
-            </button>
-          </h4>
-        </header>
-        <main [hidden]="!display[i]['_display']" class="">
-          <ng-container *ngFor="let form of section.forms; let j = index;">
-            <article class="form-wrapper view-side">
-              <!--type CustomAttrib-->
-              <div class="equal">
-
-                <label>{{form.name }} Type</label>
-                <!-- [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"-->
-                <select [name]="form.name + '_type'" [(ngModel)]="formData.sections[i].forms[j].type"
-                        #type="ngModel" (change)="resetTypes(type.value, i, j)">
-                  <option value="text">Text</option>
-                  <option value="email">Email</option>
-                  <option value="number">Number</option>
-                  <option value="textarea">Textarea</option>
-                  <option value="select">Dropdown</option>
-                  <option value="radio">Radio</option>
-                  <option value="checkbox">Checkbox</option>
-                  <option value="file">File</option>
-                  <option value="searchFilter">SearchFilter</option>
-                  <option value="searchAddList">Search & Add</option>
-                </select>
-                <div *ngIf="validateError(type.invalid) &&(type.dirty || type.touched)"
-                     class="text-danger">
-                  <div *ngIf="type.errors.required">
-                    {{form.name}} is required.
-                  </div>
-                </div>
-              </div>
-
-              <!--Required-->
-              <div *ngIf="type.value" class="equal5">
-                <label>&nbsp;</label>
-
-                <input type="checkbox" [name]="form.name + '_minlength'"
-                       [(ngModel)]="formData.sections[i].forms[j].required">
-
-                <label class="input-checkbox">Required</label>
-              </div>
-
-              <!--label-->
-              <div *ngIf="type.value" class="equal">
-                <label>Enter a label:</label>
-                <input [name]="form.name + '_label'" type="text" placeholder="label"
-                       [(ngModel)]="formData.sections[i].forms[j].label" required>
-              </div>
-
-              <!--placeholder-->
-              <div *ngIf="type.value == 'email'  ||
-                        type.value == 'text'   ||
-                        type.value == 'number' ||
-                        type.value == 'textarea'" class="equal">
-                <label>Enter Placeholder:</label>
-                <input [name]="form.name + '_paceholder'" type="text" placeholder="label"
-                       [(ngModel)]="formData.sections[i].forms[j].placeholder">
-              </div>
-
-              <!--text options-->
-              <div class="equal view-side"
-                   *ngIf="type.value == 'email'  ||
-                        type.value == 'text'   ||
-                        type.value == 'number' ||
-                        type.value == 'textarea' ">
+                <header>
+                    <h4 class="app-screen-header pb1 w96">
+                        <div *ngIf="screenName.invalid"> Enter the screen name</div>
+                        <input required type="text" style="width: 50%;"
+                               [value]="section.screenName"
+                               [name]="section.sectionName + '_section'"
+                               id="{{section.sectionName + '_section'}}"
+                               [(ngModel)]="structure.sections[i].screenName" #screenName="ngModel">
 
 
-                <div class="equal">
-                  <label>Max</label>
-                  <input [name]="form.name + '_maxlength'" type="number" placeholder="Max Length"
-                         [(ngModel)]="formData.sections[i].forms[j].maxlength">
-                </div>
-                <div class="equal">
-                  <label>Min</label>
-                  <input [name]="form.name + '_minlength'" type="number" placeholder="Min Length"
-                         [(ngModel)]="formData.sections[i].forms[j].minlength">
-                </div>
+                        <button type="button" class="close-fix ripple"
+                                (click)="(display[i]['_display'] == null || display[i]['_display']==false )? display[i]['_display']=true: display[i]['_display']=false">
+                            <span *ngIf="!display[i]['_display']">+</span>
+                            <span *ngIf="display[i]['_display']">x</span>
+                        </button>
+                    </h4>
+                </header>
+                <main [hidden]="!display[i]['_display']" class="">
+                    <ng-container *ngIf="section.forms && section.forms.length > 0">
 
-              </div>
+                        <ng-container *ngFor="let form of section.forms; let j = index;">
+                            <article class="form-wrapper view-side">
 
-              <!--select options-->
-              <div class="equal"
-                   *ngIf="type.value == 'select' || type.value == 'radio'">
+                                <div (click)="removeForm(i,j);$event.preventDefault()" class="vertical-align-parent">
+                                    <svg style="margin-top: 20px;" height="14px" width="14px" viewPort="0 0 12 12"
+                                         version="1.1"
+                                         xmlns="http://www.w3.org/2000/svg">
+                                        <line x1="1" y1="11" x2="11" y2="1" stroke="black" stroke-width="2"/>
+                                        <line x1="1" y1="1" x2="11" y2="11" stroke="black" stroke-width="2"/>
+                                    </svg>
 
-                <div class="">
-                  <label>Add option</label>
-                  <input ngModel [name]="form.name + '_addoptions'" type="text" placeholder="Add an option"
-                         #optn="ngModel"
-                         (keyup.Enter)="setSelectOptions(optn.value, i, j); optn.reset()">
-                </div>
-                <!--options view-->
-                <div *ngIf="formData.sections[i].forms[j].options && formData.sections[i].forms[j].options.length > 0">
-                  <table class="table table-bordered">
-                    <thead>
-                    <tr>
-                      <th>Label</th>
-                      <th>Value</th>
-                      <th>remove</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr *ngFor="let o of formData.sections[i].forms[j].options; let oi = index;">
-                      <td>{{o.label}}</td>
-                      <td>{{o.value}}</td>
-                      <td (click)="removeSelectOption(i, j, oi)"> remove</td>
-                    </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+                                </div>
+                                <!--type CustomAttrib-->
+                                <div class="equal">
 
-              <!--SearchFilter-->
-<!--              <ng-container *ngIf="type.value === 'searchFilter' || type.value === 'searchAddList'">
-                <div class="equal">
-                  <label>Lookup in</label>
-                  <select [name]="form.name + '_lookup'"
-                          (change)="resetTypes('searchFilter',i,j);formData.sections[i].forms[j].meta.lookup = lookupSelect.value; resetLookUp(i, j, lookup[lookupSelect.value])"
-                          [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"
-                          [(ngModel)]="formData.sections[i].forms[j].meta.lookup"
-                          #lookupSelect="ngModel">
+                                    <label>{{form.label }} Type</label>
+                                    <!-- [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"-->
+                                    <select [name]="form.name + '_type'"
+                                            [(ngModel)]="formData.sections[i].forms[j].type"
+                                            #type="ngModel" (change)="resetTypes(type.value, i, j)">
+                                        <option value="text">Text</option>
+                                        <option value="email">Email</option>
+                                        <option value="number">Number</option>
+                                        <option value="textarea">Textarea</option>
+                                        <option value="select">Dropdown</option>
+                                        <option value="radio">Radio</option>
+                                        <option value="checkbox">Checkbox</option>
+                                        <option value="file">File</option>
 
-                    <option *ngFor="let key of lookup | keys" [value]="key.key">{{key.key }}</option>
+                                    </select>
+                                    <div *ngIf="validateError(type.invalid) &&(type.dirty || type.touched)"
+                                         class="text-danger">
+                                        <div *ngIf="type.errors.required">
+                                            {{form.label}} is required.
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!--Required-->
+                                <div *ngIf="type.value" class="equal5" style="text-align: center">
+                                    <label>Required</label>
+
+                                    <input type="checkbox" [name]="form.name + '_minlength'"
+                                           [(ngModel)]="formData.sections[i].forms[j].required">
+
+                                </div>
+
+                                <!--label-->
+                                <div *ngIf="type.value" class="equal">
+                                    <label>Enter a label:</label>
+                                    <input [name]="form.name + '_label'" type="text" placeholder="label"
+                                           [(ngModel)]="formData.sections[i].forms[j].label" required>
+                                </div>
+
+                                <!--placeholder-->
+                                <div *ngIf="type.value == 'email'  ||
+                                            type.value == 'text'   ||
+                                            type.value == 'number' ||
+                                            type.value == 'textarea'" class="equal">
+                                    <label>Enter Placeholder:</label>
+                                    <input [name]="form.name + '_paceholder'" type="text" placeholder="label"
+                                           [(ngModel)]="formData.sections[i].forms[j].placeholder">
+                                </div>
+
+                                <!--text options-->
+                                <div *ngIf="type.value == 'email'  ||
+                                    type.value == 'text'   ||
+                                    type.value == 'number' ||
+                                    type.value == 'textarea' " class="equal view-side" style="flex-grow: 0;">
 
 
-                  </select>
+                                    <div class="equal" style="width: 50%;">
+                                        <label>Max</label>
+                                        <input [name]="form.name + '_maxlength'" type="number" placeholder="Max Length"
+                                               [(ngModel)]="formData.sections[i].forms[j].maxlength">
+                                    </div>
+                                    <div class="equal" style="width: 50%;">
+                                        <label>Min</label>
+                                        <input [name]="form.name + '_minlength'" type="number" placeholder="Min Length"
+                                               [(ngModel)]="formData.sections[i].forms[j].minlength">
+                                    </div>
+
+                                </div>
+
+                                <!--select options-->
+                                <div class="equal"
+                                     *ngIf="type.value == 'select' || type.value == 'radio'">
+
+                                    <div class="">
+                                        <label>Add option</label>
+                                        <input ngModel [name]="form.name + '_addoptions'" type="text"
+                                               placeholder="Add an option"
+                                               #optn="ngModel"
+                                               (keyup.Enter)="setSelectOptions(optn.value, i, j); optn.reset()">
+                                    </div>
+                                    <!--options view-->
+                                    <div *ngIf="formData.sections[i].forms[j].options && formData.sections[i].forms[j].options.length > 0">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                            <tr>
+                                                <th>Label</th>
+                                                <th>Value</th>
+                                                <th>remove</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr *ngFor="let o of formData.sections[i].forms[j].options; let oi = index;">
+                                                <td>{{o.label}}</td>
+                                                <td>{{o.value}}</td>
+                                                <td (click)="removeSelectOption(i, j, oi)"> remove</td>
+                                            </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!--SearchFilter-->
+                                <!--              <ng-container *ngIf="type.value === 'searchFilter' || type.value === 'searchAddList'">
+                                                <div class="equal">
+                                                  <label>Lookup in</label>
+                                                  <select [name]="form.name + '_lookup'"
+                                                          (change)="resetTypes('searchFilter',i,j);formData.sections[i].forms[j].meta.lookup = lookupSelect.value; resetLookUp(i, j, lookup[lookupSelect.value])"
+                                                          [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"
+                                                          [(ngModel)]="formData.sections[i].forms[j].meta.lookup"
+                                                          #lookupSelect="ngModel">
+
+                                                    <option *ngFor="let key of lookup | keys" [value]="key.key">{{key.key }}</option>
 
 
-                  <div *ngIf="validateError(lookupSelect.invalid) &&(lookupSelect.dirty || lookupSelect.touched)"
-                       class="text-danger">
-                    <div *ngIf="lookupSelect.errors.required">
-                      Lookup is required.
+                                                  </select>
+
+
+                                                  <div *ngIf="validateError(lookupSelect.invalid) &&(lookupSelect.dirty || lookupSelect.touched)"
+                                                       class="text-danger">
+                                                    <div *ngIf="lookupSelect.errors.required">
+                                                      Lookup is required.
+                                                    </div>
+                                                  </div>
+                                                </div>
+
+                                                &lt;!&ndash;SearchFilter lookup options&ndash;&gt;
+                                                <div *ngIf="lookupSelect.value" class="equal">
+                                                  <label>Field</label>
+                                                  <input type="button" value="Customise" (click)="showLookUpCustomisation(i,j,lookupSelect.value)">
+
+                                                  <div *ngIf="formData.sections[i].forms[j].meta._c"
+                                                       (click)="closeSearchCustomisation(i,j,lookupSelect.value)" class="component-dialogue ">
+                                                    <div (click)="$event.stopPropagation()" class="component-dialogue-inner elevated"
+                                                         style="width: 500px">
+                                                      <table class="table-strip width100">
+                                                        <thead>
+                                                        <tr>
+                                                          <th>Attribute</th>
+                                                          <th class="txt-center">Display in Result</th>
+                                                          <th class="txt-center">Use as Filter</th>
+                                                          <th class="txt-center">Date Filter</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                        <tr *ngFor="let attrs of formData.sections[i].forms[j].meta.fields; let k = index">
+                                                          <td>{{attrs.name}}</td>
+                                                          <td class="txt-center"><input type="checkbox" [name]="form.name + attrs.name + '_display'"
+                                                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].displayed">
+                                                          </td>
+                                                          <td class="txt-center"><input type="checkbox" [name]="form.name + attrs.name + '_filter'"
+                                                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].selected"
+                                                                                        #ds="ngModel"></td>
+                                                          <td class="txt-center"><input *ngIf="ds.value" type="checkbox"
+                                                                                        [name]="form.name + attrs.name + '_isDate'"
+                                                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].type">
+                                                          </td>
+                                                        </tr>
+                                                        </tbody>
+                                                      </table>
+                                                    </div>
+                                                  </div>
+
+                                                  &lt;!&ndash;<select&ndash;&gt;
+                                                  &lt;!&ndash;ngModel&ndash;&gt;
+                                                  &lt;!&ndash;[name]="form.name + '_lookup_Field'"&ndash;&gt;
+                                                  &lt;!&ndash;(change)="addToLookUpOptions(i, j, lf.value)"&ndash;&gt;
+                                                  &lt;!&ndash;#lf="ngModel">&ndash;&gt;
+                                                  &lt;!&ndash;<option value="-1">Choose Attributes</option>&ndash;&gt;
+                                                  &lt;!&ndash;<option *ngFor="let atr of lookup[lookupSelect.value]" [value]="atr">{{atr}}</option>&ndash;&gt;
+                                                  &lt;!&ndash;</select>&ndash;&gt;
+
+                                                  &lt;!&ndash;<div>&ndash;&gt;
+                                                  &lt;!&ndash;<table class="table table-bordered">&ndash;&gt;
+                                                  &lt;!&ndash;<thead>&ndash;&gt;
+                                                  &lt;!&ndash;<tr>&ndash;&gt;
+                                                  &lt;!&ndash;<th>Search</th>&ndash;&gt;
+                                                  &lt;!&ndash;<th>DatePicker</th>&ndash;&gt;
+                                                  &lt;!&ndash;<th>remove</th>&ndash;&gt;
+                                                  &lt;!&ndash;</tr>&ndash;&gt;
+                                                  &lt;!&ndash;</thead>&ndash;&gt;
+                                                  &lt;!&ndash;<tbody>&ndash;&gt;
+                                                  &lt;!&ndash;<ng-container *ngFor="let o of formData.sections[i].forms[j].meta.fields; let oi = index;">&ndash;&gt;
+                                                  &lt;!&ndash;<tr *ngIf="o.selected">&ndash;&gt;
+                                                  &lt;!&ndash;<td>{{o.name}}</td>&ndash;&gt;
+                                                  &lt;!&ndash;<td><input type="checkbox" [name]="formData.sections[i].forms[j].meta.fields[oi].name"&ndash;&gt;
+                                                  &lt;!&ndash;[checked]="formData.sections[i].forms[j].meta.fields[oi].type"&ndash;&gt;
+                                                  &lt;!&ndash;[(ngModel)]="formData.sections[i].forms[j].meta.fields[oi].type"></td>&ndash;&gt;
+                                                  &lt;!&ndash;<td (click)="removelookupOption(i, j, oi)"> X</td>&ndash;&gt;
+                                                  &lt;!&ndash;</tr>&ndash;&gt;
+                                                  &lt;!&ndash;</ng-container>&ndash;&gt;
+                                                  &lt;!&ndash;</tbody>&ndash;&gt;
+                                                  &lt;!&ndash;</table>&ndash;&gt;
+                                                  &lt;!&ndash;</div>&ndash;&gt;
+
+                                                </div>
+
+                                                &lt;!&ndash;                <div class="equal">
+                                                                <label>&nbsp;</label>
+                                                                <input
+                                                                [id]="form.name + '_lookUp_dateFilter'+i+j"
+                                                                [(ngModel)]="formData.sections[i].forms[j].meta.dateFilter" type="checkbox"
+                                                                [name]="form.name + '_lookUp_dateFilter'">
+                                                                &lt;!&ndash;[(ngModel)]="formData.sections[i].forms[j].required"&ndash;&gt;
+                                                                <label [for]="form.name + '_lookUp_dateFilter'+i+j" class="input-checkbox">Date Filter</label>
+                                                                </div>&ndash;&gt;
+                                              </ng-container>-->
+
+                                <div *ngIf="type.value === 'file'" class="equal">
+                                    <label>File Type</label>
+                                    <!-- [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"-->
+                                    <select [name]="form.name + '_fileType'"
+                                            [(ngModel)]="formData.sections[i].forms[j].options"
+                                            #filetype="ngModel">
+                                        <option value="image/*">Images</option>
+                                        <option
+                                                value=".pdf,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+                                            Documents
+                                        </option>
+
+                                    </select>
+                                    <div *ngIf="(filetype.invalid) &&(filetype.dirty || filetype.touched)"
+                                         class="text-danger">
+                                        <div *ngIf="filetype.errors.required">
+                                            {{form.name}} type is required.
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </article>
+
+                        </ng-container>
+
+                        <div class="mt8">
+                            <h4>Form View properties</h4>
+                            <label>Forms aliginment</label>
+                            <select [name]="section" [(ngModel)]="formData.sections[i].view">
+                                <option value="form-box wp100">100%</option>
+                                <option value="form-box wp80">80%</option>
+                                <option value="form-box wp75">75%</option>
+                                <option value="form-box wp50">50%</option>
+                                <option value="form-box wp33">33%</option>
+                                <option value="form-box wp25">25%</option>
+                                <option value="form-box wp20">20%</option>
+                                <option value="form-box wp10">10%</option>
+                            </select>
+
+                        </div>
+                    </ng-container>
+                    <ng-container>
+                        <button (click)="insertNewForm(i);$event.preventDefault()" class="add-form-svg m16">
+                            Add new form
+                        </button>
+                    </ng-container>
+                    <!--<div class="text-right p1">-->
+                    <!--<button type="button" class="btn btn-warning" (click)="resetSection(i) ">Reset</button>-->
+                    <!--</div>-->
+                </main>
+            </section>
+
+            <footer>
+
+                <div class="view-side text-muted card  fp-p1 fp-mt8">
+                    <div class=" fp-mt8 css">
+
+                        <label>Section aliginment</label>
+
+                        <select [name]="formData.pageName" [(ngModel)]="formData.view">
+                            <option value="view-box">Block</option>
+                            <option value="view-side">Inline</option>
+                        </select>
                     </div>
-                  </div>
-                </div>
 
-                &lt;!&ndash;SearchFilter lookup options&ndash;&gt;
-                <div *ngIf="lookupSelect.value" class="equal">
-                  <label>Field</label>
-                  <input type="button" value="Customise" (click)="showLookUpCustomisation(i,j,lookupSelect.value)">
-
-                  <div *ngIf="formData.sections[i].forms[j].meta._c"
-                       (click)="closeSearchCustomisation(i,j,lookupSelect.value)" class="component-dialogue ">
-                    <div (click)="$event.stopPropagation()" class="component-dialogue-inner elevated"
-                         style="width: 500px">
-                      <table class="table-strip width100">
-                        <thead>
-                        <tr>
-                          <th>Attribute</th>
-                          <th class="txt-center">Display in Result</th>
-                          <th class="txt-center">Use as Filter</th>
-                          <th class="txt-center">Date Filter</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr *ngFor="let attrs of formData.sections[i].forms[j].meta.fields; let k = index">
-                          <td>{{attrs.name}}</td>
-                          <td class="txt-center"><input type="checkbox" [name]="form.name + attrs.name + '_display'"
-                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].displayed">
-                          </td>
-                          <td class="txt-center"><input type="checkbox" [name]="form.name + attrs.name + '_filter'"
-                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].selected"
-                                                        #ds="ngModel"></td>
-                          <td class="txt-center"><input *ngIf="ds.value" type="checkbox"
-                                                        [name]="form.name + attrs.name + '_isDate'"
-                                                        [(ngModel)]="formData.sections[i].forms[j].meta.fields[k].type">
-                          </td>
-                        </tr>
-                        </tbody>
-                      </table>
+                    <div class="fp-mt8 css">
+                        <label>Submit button Name</label>
+                        <input name="submitButtonName" [(ngModel)]="formData.submit.name">
                     </div>
-                  </div>
 
-                  &lt;!&ndash;<select&ndash;&gt;
-                  &lt;!&ndash;ngModel&ndash;&gt;
-                  &lt;!&ndash;[name]="form.name + '_lookup_Field'"&ndash;&gt;
-                  &lt;!&ndash;(change)="addToLookUpOptions(i, j, lf.value)"&ndash;&gt;
-                  &lt;!&ndash;#lf="ngModel">&ndash;&gt;
-                  &lt;!&ndash;<option value="-1">Choose Attributes</option>&ndash;&gt;
-                  &lt;!&ndash;<option *ngFor="let atr of lookup[lookupSelect.value]" [value]="atr">{{atr}}</option>&ndash;&gt;
-                  &lt;!&ndash;</select>&ndash;&gt;
+                    <div class="fp-mt8 css">
+                        <label>CSS for submit button</label>
+                        <input name="submitButtonColor" [(ngModel)]="formData.submit.view">
+                    </div>
 
-                  &lt;!&ndash;<div>&ndash;&gt;
-                  &lt;!&ndash;<table class="table table-bordered">&ndash;&gt;
-                  &lt;!&ndash;<thead>&ndash;&gt;
-                  &lt;!&ndash;<tr>&ndash;&gt;
-                  &lt;!&ndash;<th>Search</th>&ndash;&gt;
-                  &lt;!&ndash;<th>DatePicker</th>&ndash;&gt;
-                  &lt;!&ndash;<th>remove</th>&ndash;&gt;
-                  &lt;!&ndash;</tr>&ndash;&gt;
-                  &lt;!&ndash;</thead>&ndash;&gt;
-                  &lt;!&ndash;<tbody>&ndash;&gt;
-                  &lt;!&ndash;<ng-container *ngFor="let o of formData.sections[i].forms[j].meta.fields; let oi = index;">&ndash;&gt;
-                  &lt;!&ndash;<tr *ngIf="o.selected">&ndash;&gt;
-                  &lt;!&ndash;<td>{{o.name}}</td>&ndash;&gt;
-                  &lt;!&ndash;<td><input type="checkbox" [name]="formData.sections[i].forms[j].meta.fields[oi].name"&ndash;&gt;
-                  &lt;!&ndash;[checked]="formData.sections[i].forms[j].meta.fields[oi].type"&ndash;&gt;
-                  &lt;!&ndash;[(ngModel)]="formData.sections[i].forms[j].meta.fields[oi].type"></td>&ndash;&gt;
-                  &lt;!&ndash;<td (click)="removelookupOption(i, j, oi)"> X</td>&ndash;&gt;
-                  &lt;!&ndash;</tr>&ndash;&gt;
-                  &lt;!&ndash;</ng-container>&ndash;&gt;
-                  &lt;!&ndash;</tbody>&ndash;&gt;
-                  &lt;!&ndash;</table>&ndash;&gt;
-                  &lt;!&ndash;</div>&ndash;&gt;
+                    <div class="fp-mt8 css">
+                        <label>Reset button Name</label>
+                        <input name="resetButtonName" [(ngModel)]="formData.reset.name">
+                    </div>
 
+                    <div class="fp-mt8 css">
+                        <label>CSS for Reset button</label>
+                        <input name="resetButtonColor" [(ngModel)]="formData.reset.view"><br>
+                        <label class="input-checkbox"><input name="resetButtonCheck" type="checkbox"
+                                                             [(ngModel)]="formData.reset.display"
+                                                             [checked]="formData.reset.display">Show reset
+                            button</label>
+                    </div>
+
+                    <div class="fp-m8">
+                        <button type="submit" class="btn btn-info" [disabled]="!customForm.valid">Save Changes</button>
+                    </div>
                 </div>
 
-                &lt;!&ndash;                <div class="equal">
-                                <label>&nbsp;</label>
-                                <input
-                                [id]="form.name + '_lookUp_dateFilter'+i+j"
-                                [(ngModel)]="formData.sections[i].forms[j].meta.dateFilter" type="checkbox"
-                                [name]="form.name + '_lookUp_dateFilter'">
-                                &lt;!&ndash;[(ngModel)]="formData.sections[i].forms[j].required"&ndash;&gt;
-                                <label [for]="form.name + '_lookUp_dateFilter'+i+j" class="input-checkbox">Date Filter</label>
-                                </div>&ndash;&gt;
-              </ng-container>-->
 
-              <div *ngIf="type.value === 'file'" class="equal">
-                <label>File Type</label>
-                <!-- [required]="(form['name'].indexOf('CustomAttrib') == -1)?'required':false"-->
-                <select [name]="form.name + '_fileType'" [(ngModel)]="formData.sections[i].forms[j].options"
-                        #filetype="ngModel">
-                  <option value="image/*">Images</option>
-                  <option
-                          value=".pdf,.doc,.docx,.xml,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
-                    Documents
-                  </option>
+            </footer>
 
-                </select>
-                <div *ngIf="(filetype.invalid) &&(filetype.dirty || filetype.touched)"
-                     class="text-danger">
-                  <div *ngIf="filetype.errors.required">
-                    {{form.name}} type is required.
-                  </div>
-                </div>
-              </div>
-            </article>
-
-          </ng-container>
-
-          <div class="mt8">
-            <h4>Form View properties</h4>
-            <label>Forms aliginment</label>
-            <select [name]="formData.sections[i].sectionName" [(ngModel)]="formData.sections[i].view">
-              <option value="form-box wp100">100%</option>
-              <option value="form-box wp80">80%</option>
-              <option value="form-box wp75">75%</option>
-              <option value="form-box wp50">50%</option>
-              <option value="form-box wp33">33%</option>
-              <option value="form-box wp25">25%</option>
-              <option value="form-box wp20">20%</option>
-              <option value="form-box wp10">10%</option>
-            </select>
-
-          </div>
-
-          <!--<div class="text-right p1">-->
-          <!--<button type="button" class="btn btn-warning" (click)="resetSection(i) ">Reset</button>-->
-          <!--</div>-->
-        </main>
-      </section>
-      <footer>
-
-        <div class="view-side text-muted card  fp-p1 fp-mt8">
-          <div class=" fp-mt8 css">
-
-            <label>Section aliginment</label>
-
-            <select [name]="formData.pageName" [(ngModel)]="formData.view">
-              <option value="view-box">Block</option>
-              <option value="view-side">Inline</option>
-            </select>
-          </div>
-
-          <div class="fp-mt8 css">
-            <label>Submit button Name</label>
-            <input name="submitButtonName" [(ngModel)]="formData.submit.name">
-          </div>
-
-          <div class="fp-mt8 css">
-            <label>CSS for submit button</label>
-            <input name="submitButtonColor" [(ngModel)]="formData.submit.view">
-          </div>
-
-          <div class="fp-mt8 css">
-            <label>Reset button Name</label>
-            <input name="resetButtonName" [(ngModel)]="formData.reset.name">
-          </div>
-
-          <div class="fp-mt8 css">
-            <label>CSS for Reset button</label>
-            <input name="resetButtonColor" [(ngModel)]="formData.reset.view"><br>
-            <label class="input-checkbox"><input name="resetButtonCheck" type="checkbox"
-                                                 [(ngModel)]="formData.reset.display"
-                                                 [checked]="formData.reset.display">Show reset button</label>
-          </div>
-
-          <div class="fp-m8">
-            <button type="submit" class="btn btn-info" [disabled]="!customForm.valid">Save Changes</button>
-          </div>
         </div>
+    </form>
 
+    <pre>
+      {{structure | json}}
+    </pre>
 
-      </footer>
-
-    </div>
-  </form>
-
-  <pre>
-  {{formData | json}}
-  </pre>
-
-  <!--<div class="fp-mt2 fp-p1">-->
+    <!--<div class="fp-mt2 fp-p1">-->
     <!--&lt;!&ndash;(click)="(display['preview']['_display'] == null || display['preview']['_display']==false )?display['preview']['_display']= true: display['preview']['_display']=false"&ndash;&gt;-->
     <!--<h1>Preview</h1>-->
     <!--&lt;!&ndash;*ngIf="display['preview']['_display']"&ndash;&gt;-->
     <!--&lt;!&ndash;<form-generator [structure]="formData"></form-generator>&ndash;&gt;-->
-  <!--</div>-->
+    <!--</div>-->
 
 </div>
 

@@ -37,12 +37,36 @@ export class FormGeneratorComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        console.log(this.structure, 'structure');
+        if (this.structure == null) {
 
-
+            this.structure = {
+                'view': 'view-side',
+                'reset': {
+                    'name': 'Reset',
+                    'view': 'btn btn-warning',
+                    'display': true
+                },
+                'submit': {
+                    'name': 'Submit',
+                    'view': 'btn'
+                },
+                'pageName': 'pageName',
+                'sections': [
+                    {
+                        'view': 'form-box wp50',
+                        'forms': []
+                    }
+                ],
+                'pageTitle': 'pageTitle'
+            };
+        }
+        this.formData = null;
+        this.formData = this.structure;
+        this.initTemplate();
     }
 
     ngOnChanges(changes: any) {
-        console.log('Changes');
         this.formData = null;
         this.formData = this.structure;
         this.initTemplate();
@@ -89,6 +113,31 @@ export class FormGeneratorComponent implements OnInit, OnChanges {
                 });
             }
         });
+    }
+
+    insertNewForm(sectionIndex) {
+        let singleForm = {
+            'meta': null,
+            'name': this.makeid(),
+            'type': '',
+            'label': '',
+            'options': null,
+            'required': false,
+            'maxlength': '',
+            'minlength': '',
+            'placeholder': ''
+        };
+
+
+        try {
+            this.structure.sections[sectionIndex]['forms'].push(singleForm);
+        } catch (e) {
+            this.structure.sections[sectionIndex].forms = [];
+            this.structure[sectionIndex]['forms'].push(singleForm);
+        }
+
+        this.formData = this.structure;
+        this.initTemplate();
     }
 
     resetSection(i) {
@@ -193,6 +242,24 @@ export class FormGeneratorComponent implements OnInit, OnChanges {
     closeSearchCustomisation(i, j, lookup) {
         if (this.formData.sections[i].forms[j].meta) {
             this.formData.sections[i].forms[j].meta['_c'] = false;
+        }
+    }
+
+    makeid() {
+        var text = '';
+        var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+
+        for (var i = 0; i < 5; i++)
+            text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+        return text;
+    }
+
+    removeForm(i, j) {
+        try {
+            this.structure.sections[i].forms.splice(j, 1);
+        } catch (e) {
+            console.log(e);
         }
     }
 }
